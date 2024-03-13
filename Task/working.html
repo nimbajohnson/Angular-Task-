@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angular Company Management</title>
+</head>
+
+<body>
+  <router-outlet></router-outlet>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular-route.min.js"></script>
+
+  <script>
+    // Define Angular module
+    var app = angular.module('app', ['ngRoute']);
+
+    // Configure routes
+    app.config(function ($routeProvider) {
+      $routeProvider
+        .when('/', {
+          templateUrl: 'company-list.html',
+          controller: 'CompanyListController'
+        })
+        .when('/company-details/:id', {
+          templateUrl: 'company-details.html',
+          controller: 'CompanyDetailsController'
+        })
+        .otherwise({
+          redirectTo: '/'
+        });
+    });
+
+    // Define CompanyListController
+    app.controller('CompanyListController', function ($scope, $location) {
+      $scope.companies = [
+        { id: 1, name: 'Company A' },
+        { id: 2, name: 'Company B' },
+        { id: 3, name: 'Company C' }
+      ];
+
+      $scope.onView = function (companyId) {
+        $location.path('/company-details/' + companyId);
+      };
+    });
+
+    // Define CompanyDetailsController
+    app.controller('CompanyDetailsController', function ($scope, $routeParams, $location) {
+      $scope.companyId = $routeParams.id;
+
+      $scope.onCancel = function () {
+        $location.path('/');
+      };
+
+      $scope.onApply = function () {
+        // Send a request to the backend to apply for the selected company using $scope.companyId
+        $location.path('/apply/' + $scope.companyId);
+      };
+    });
+  </script>
+
+  <script type="text/ng-template" id="company-list.html">
+    <h1>Company List</h1>
+    <ul>
+      <li ng-repeat="company in companies">
+        {{ company.name }}
+        <button ng-click="onView(company.id)">View</button>
+      </li>
+    </ul>
+  </script>
+
+  <script type="text/ng-template" id="company-details.html">
+    <h1>Company Details</h1>
+    <p>Selected Company ID: {{ companyId }}</p>
+    <button ng-click="onCancel()">Cancel</button>
+    <button ng-click="onApply()">Apply</button>
+  </script>
+
+</body>
+
+</html>
